@@ -1,6 +1,6 @@
 Name:           derby
 Version:        10.6.1.0
-Release:        6
+Release:        8
 Summary:        Relational database implemented entirely in Java
 
 Group:          Databases
