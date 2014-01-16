@@ -2,7 +2,7 @@
 %if 0%{?fedora}
 %else
 # Mandriva has it as /usr/com
-%define %_sharedstatedir /var/lib
+%define _sharedstatedir /var/lib
 %endif
 Name:           derby
 Version:        10.9.1.0
