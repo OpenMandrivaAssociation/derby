@@ -1,21 +1,2 @@
 sources:
-  "db-derby-10.6.1.0-src.tar.gz:"	894764da7fc571fa5ad93eb6d04fb11bc1189083
-  "derby-10.6.1.0.pom:"	2bdb4f4ab87260522517cf85e59ebca41f359159
-  "derbyclient-10.6.1.0.pom:"	2656b038d1dd90e160ad7ca23a85ef02fe30cc14
-  "derbyLocale_cs-10.6.1.0.pom:"	210872977c0e92b5afa68e3d011eb70f8aab8d2b
-  "derbyLocale_de_DE-10.6.1.0.pom:"	34021c95a3fbc8dcca526d2cee0194728d1f10cb
-  "derbyLocale_es-10.6.1.0.pom:"	8d5ebafc8cd0274cf65d7a443bed9698c6bb6848
-  "derbyLocale_fr-10.6.1.0.pom:"	669d5e060cec1274c1a15b71ca8de80598aac3cf
-  "derbyLocale_hu-10.6.1.0.pom:"	49fccd29041b5c7598450a868947e9f8a81bd7cb
-  "derbyLocale_it-10.6.1.0.pom:"	083f95aff6650a309da6b9384d34065ca8527a5b
-  "derbyLocale_ja_JP-10.6.1.0.pom:"	c3088f9a0fea9de31335fd4b05a43e95597d1529
-  "derbyLocale_ko_KR-10.6.1.0.pom:"	4a11866a9447c1e0a542e3c8ef807ef17bfce3da
-  "derbyLocale_pl-10.6.1.0.pom:"	15e67e0350d2fa82adfcd6f917cda09f096db96a
-  "derbyLocale_pt_BR-10.6.1.0.pom:"	9e74c1a09a65affa891d29e21f9d70fe139a1a27
-  "derbyLocale_ru-10.6.1.0.pom:"	d5b59e4ed3993e36634a0c15d7326f0b29f185e7
-  "derbyLocale_zh_CN-10.6.1.0.pom:"	d0b341ba7e1155423e62725fede5badc19532975
-  "derbyLocale_zh_TW-10.6.1.0.pom:"	863c733d6066b1da58b134b4366f1a8445302c63
-  "derbynet-10.6.1.0.pom:"	e473cd83fcea9950a09fb52bbc2e2a20c1430b56
-  "derby-project-10.6.1.0.pom:"	cdcccaa7d06431081c57e5996439c2bfe5ee42cb
-  "derby-script:"	78c8f2c6c2d2e3c5d085eab18fb1a248472543ac
-  "derbytools-10.6.1.0.pom:"	603c806deaccd0bc99caed97b1c833e3256e2943
+  db-derby-10.9.1.0-src.tar.gz: 6ca4c505225cc2c068aceeab1cfada97d5ccd789

@@ -1,14 +1,15 @@
+%{?_javapackages_macros:%_javapackages_macros}
 Name:           derby
-Version:        10.6.1.0
-Release:        8
+Version:        10.9.1.0
+Release:        6.0%{?dist}
 Summary:        Relational database implemented entirely in Java
 
-Group:          Databases
+
 License:        ASL 2.0
 URL:            http://db.apache.org/derby/
-Source0:        http://www.apache.org/dist/db/%{name}/db-%{name}-%{version}/db-%{name}-%{version}-src.tar.gz
+Source0:        http://archive.apache.org/dist/db/%{name}/db-%{name}-%{version}/db-%{name}-%{version}-src.tar.gz
 Source1:        derby-script
-BuildRoot:      %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
+Source2:        derby.service
 
 Source10:       http://repo1.maven.org/maven2/org/apache/%{name}/derby/%{version}/derby-%{version}.pom
 Source11:       http://repo1.maven.org/maven2/org/apache/%{name}/derby-project/%{version}/derby-project-%{version}.pom
@@ -29,17 +30,25 @@ Source25:       http://repo1.maven.org/maven2/org/apache/%{name}/derbyclient/%{v
 Source26:       http://repo1.maven.org/maven2/org/apache/%{name}/derbynet/%{version}/derbynet-%{version}.pom
 Source27:       http://repo1.maven.org/maven2/org/apache/%{name}/derbytools/%{version}/derbytools-%{version}.pom
 
+# https://issues.apache.org/jira/browse/DERBY-5125
+Patch1: derby-javacc5.patch
+# https://bugzilla.redhat.com/show_bug.cgi?id=830661
+Patch2: derby-net.patch
+
 BuildRequires:  java-devel >= 1.6
 BuildRequires:  jpackage-utils
-BuildRequires:  servletapi5
+BuildRequires:  servlet3
 BuildRequires:  jakarta-oro
 BuildRequires:  javacc
 BuildRequires:  junit4
 BuildRequires:  xalan-j2
 BuildRequires:  xerces-j2
-BuildRequires:  ant-nodeps
+BuildRequires:  ant
+BuildRequires:  systemd-units
 Requires:       java
-Requires:       jpackage-utils
+Requires(pre):  shadow-utils
+Requires(preun): systemd-units
+Requires(post): systemd-units
 
 BuildArch:      noarch
 
@@ -51,7 +60,11 @@ to Java, JDBC, and SQL standards and embedded JDBC driver.
 
 %prep
 %setup -q -c
-
+pushd db-%{name}-%{version}-src
+rm java/engine/org/apache/derby/impl/sql/compile/Token.java
+%patch1 -p0
+popd
+%patch2 -p1 -F1
 
 %build
 cd db-%{name}-%{version}-src
@@ -59,7 +72,7 @@ find -name '*.jar' -delete
 
 # tools/ant/properties/extrapath.properties
 ln -sf $(build-classpath javacc) tools/java/javacc.jar
-ln -sf $(build-classpath servletapi5) \
+ln -sf $(build-classpath servlet25) \
         tools/java/geronimo-spec-servlet-2.4-rc4.jar
 ln -sf $(build-classpath xalan-j2) tools/java/xalan.jar
 ln -sf $(build-classpath oro) tools/java/jakarta-oro-2.0.8.jar
@@ -69,34 +82,25 @@ ln -sf $(build-classpath junit4) tools/java/junit.jar
 
 # Using generics
 find -name build.xml |xargs sed '
-        s/target="1.4"/target="1.5"/
-        s/source="1.4"/source="1.5"/
+        s/target="1.4"/target="1.6"/
+        s/source="1.4"/source="1.6"/
         /Class-Path/d
 ' -i
 
 # Fire
-ant buildsource -Dderby.source.rpm=%{version}
-ant buildjars -Dderby.source.rpm=%{version}
+ant -verbose clobber buildsource buildjars
 
 
 %install
 cd db-%{name}-%{version}-src
-rm -rf $RPM_BUILD_ROOT
 
 # Library
 install -d $RPM_BUILD_ROOT%{_javadir}/%{name}
-for i in jars/insane/*.jar
+for i in jars/sane/*.jar
 do
         B=$(basename $i |sed 's/.jar$//')
-        install -m644 $i $RPM_BUILD_ROOT%{_javadir}/%{name}/$B-%{version}.jar
-        ln -sf $B-%{version}.jar $RPM_BUILD_ROOT%{_javadir}/%{name}/$B.jar
+        install -m644 $i $RPM_BUILD_ROOT%{_javadir}/%{name}/$B.jar
 done
-
-# We hardlink instead of symlinking so that default security policy
-# applies to derbynet.jar
-ln -f $RPM_BUILD_ROOT%{_javadir}/%{name}/derbynet-%{version}.jar \
-        $RPM_BUILD_ROOT%{_javadir}/%{name}/derbynet.jar
-
 
 # Wrapper scripts
 install -d $RPM_BUILD_ROOT%{_bindir}
@@ -129,45 +133,37 @@ install -p -m644 %{SOURCE26} $RPM_BUILD_ROOT%{_mavenpomdir}/JPP.derby-derbynet.p
 install -p -m644 %{SOURCE27} $RPM_BUILD_ROOT%{_mavenpomdir}/JPP.derby-derbytools.pom
 
 # Dependency maps
-%add_to_maven_depmap org.apache.derby derby %{version} JPP/derby derby
-%add_to_maven_depmap org.apache.derby derby-project %{version} JPP/derby derby-project
-%add_to_maven_depmap org.apache.derby derbyLocale_cs %{version} JPP/derby derbyLocale_cs
-%add_to_maven_depmap org.apache.derby derbyLocale_de_DE %{version} JPP/derby derbyLocale_de_DE
-%add_to_maven_depmap org.apache.derby derbyLocale_es %{version} JPP/derby derbyLocale_es
-%add_to_maven_depmap org.apache.derby derbyLocale_fr %{version} JPP/derby derbyLocale_fr
-%add_to_maven_depmap org.apache.derby derbyLocale_hu %{version} JPP/derby derbyLocale_hu
-%add_to_maven_depmap org.apache.derby derbyLocale_it %{version} JPP/derby derbyLocale_it
-%add_to_maven_depmap org.apache.derby derbyLocale_ja_JP %{version} JPP/derby derbyLocale_ja_JP
-%add_to_maven_depmap org.apache.derby derbyLocale_ko_KR %{version} JPP/derby derbyLocale_ko_KR
-%add_to_maven_depmap org.apache.derby derbyLocale_pl %{version} JPP/derby derbyLocale_pl
-%add_to_maven_depmap org.apache.derby derbyLocale_pt_BR %{version} JPP/derby derbyLocale_pt_BR
-%add_to_maven_depmap org.apache.derby derbyLocale_ru %{version} JPP/derby derbyLocale_ru
-%add_to_maven_depmap org.apache.derby derbyLocale_zh_CN %{version} JPP/derby derbyLocale_zh_CN
-%add_to_maven_depmap org.apache.derby derbyLocale_zh_TW %{version} JPP/derby derbyLocale_zh_TW
-%add_to_maven_depmap org.apache.derby derbyclient %{version} JPP/derby derbyclient
-%add_to_maven_depmap org.apache.derby derbynet %{version} JPP/derby derbynet
-%add_to_maven_depmap org.apache.derby derbytools %{version} JPP/derby derbytools
+for pom in $RPM_BUILD_ROOT%{_mavenpomdir}/*.pom ; do
+        B=$(basename $pom | sed -e 's/JPP.%{name}-//' -e 's/.pom$//')
+	if [ -f "$RPM_BUILD_ROOT%{_javadir}/%{name}/$B.jar" ] ; then
+		%add_maven_depmap JPP.%{name}-$B.pom %{name}/$B.jar
+	else
+		%add_maven_depmap JPP.%{name}-$B.pom
+	fi
+done
 
+# Systemd unit
+mkdir -p $RPM_BUILD_ROOT%{_unitdir}
+install -p -m 644 %{SOURCE2} \
+        $RPM_BUILD_ROOT%{_unitdir}/%{name}.service
 
-%check
-#TODO
-#ant junit-all
+# Derby home dir
+install -dm 755 $RPM_BUILD_ROOT/var/lib/derby
 
+%pre
+getent group derby >/dev/null || groupadd -r derby
+getent passwd derby >/dev/null || \
+    useradd -r -g derby -d /var/lib/derby -s /sbin/nologin \
+    -c "Apache Derby service account" derby
+exit 0
 
-%clean
-rm -rf $RPM_BUILD_ROOT
-
+%preun
+%systemd_preun derby.service
 
 %post
-%update_maven_depmap
-
-
-%postun
-%update_maven_depmap
-
+%systemd_post derby.service
 
 %files
-%defattr(-,root,root,-)
 %{_bindir}/*
 %{_javadir}/%{name}
 %doc db-%{name}-%{version}-src/LICENSE
@@ -177,5 +173,66 @@ rm -rf $RPM_BUILD_ROOT
 %doc db-%{name}-%{version}-src/README
 %{_mavenpomdir}/*.pom
 %{_mavendepmapfragdir}/%{name}
+%{_unitdir}/%{name}.service
+%attr(755,derby,derby) %{_sharedstatedir}/%{name}
 
 
+%changelog
+* Tue Oct 15 2013 Michal Srb <msrb@redhat.com> - 10.9.1.0-6
+- Add derbyclient.jar to classpath of derby-ij (Thanks J. Stribny)
+
+* Fri Oct 11 2013 Michal Srb <msrb@redhat.com> - 10.9.1.0-5
+- Add more classes to derbynet.jar (related to #830661)
+- Create and own derby home dir
+- Simplify systemd service file a bit
+
+* Mon Aug 12 2013 Mat Booth <fedora@matbooth.co.uk> - 10.9.1.0-4
+- Fix FTBFS rhbz #992123
+- Update servlet BR
+- Add missing BR on systemd-units
+- Drop versioned jars
+- Remove use of deprecated add_to_maven_depmap macro
+
+* Sat Aug 03 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 10.9.1.0-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
+
+* Mon Feb 25 2013 Andy Grimm <agrimm@gmail.com> - 10.9.1.0-2
+- Add systemd service unit (RHBZ#741134)
+
+* Mon Feb 25 2013 Andy Grimm <agrimm@gmail.com> - 10.9.1.0-1
+- Version bump
+- Add classes to derbynet.jar (RHBZ#830661)
+
+* Wed Feb 13 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 10.6.2.1-5
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_19_Mass_Rebuild
+
+* Fri Aug 10 2012 Andy Grimm <agrimm@gmail.com> - 10.6.2.1-4
+- Add gcj buildreq to fix FTBFS
+
+* Wed Jul 18 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 10.6.2.1-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
+
+* Fri Jan 13 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 10.6.2.1-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
+
+* Tue Nov 29 2011 Alexander Kurtakov <akurtako@redhat.com> 10.6.2.1-1
+- Update to newer upstream version.
+
+* Fri Feb 25 2011 Lubomir Rintel <lkundrak@v3.sk> - 10.6.1.0-6
+- Fix startup script (Thomas Meyer, #668828)
+
+* Tue Feb 08 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 10.6.1.0-5
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
+
+* Fri Nov 26 2010 Stanislav Ochotnicky <sochotnicky@redhat.com> - 10.6.1.0-4
+- Fix pom filenames (Resolves rhbz#655794)
+
+* Tue Jul 27 2010 Lubomir Rintel <lkundrak@v3.sk> - 10.6.1.0-3
+- Fix buildrequires
+
+* Tue Jul 27 2010 Lubomir Rintel <lkundrak@v3.sk> - 10.6.1.0-2
+- Add tool launchers
+- Add POMs
+
+* Mon Jun 28 2010 Lubomir Rintel <lkundrak@v3.sk> - 10.6.1.0-1
+- Initial packaging

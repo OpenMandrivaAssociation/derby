@@ -1,0 +1,13 @@
+diff -ur derby-10.9.1.0/db-derby-10.9.1.0-src/build.xml derby-10.9.1.0.new/db-derby-10.9.1.0-src/build.xml
+--- derby-10.9.1.0/db-derby-10.9.1.0-src/build.xml	2012-05-23 17:03:54.000000000 -0400
++++ derby-10.9.1.0.new/db-derby-10.9.1.0-src/build.xml	2013-02-25 17:03:56.499913068 -0500
+@@ -1700,6 +1698,9 @@
+     	 manifest="${derby.jar.dir}/lists/smfnet.mf">
+       <fileset dir="${out.dir}"
+                includes="org/apache/derby/loc/drda/**,
++                         org/apache/derby/drda/**,
++                         org/apache/derby/mbeans/drda/**,
++                         org/apache/derby/impl/drda/**,
+                          org/apache/derby/loc/sysinfoMessages.properties,
+                          org/apache/derby/info/net.properties,
+                          org/apache/derby/drda/server.policy"/>
