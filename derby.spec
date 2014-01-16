@@ -1,4 +1,9 @@
 %{?_javapackages_macros:%_javapackages_macros}
+%if 0%{?fedora}
+%else
+# Mandriva has it as /usr/com
+%define %_sharedstatedir /var/lib
+%endif
 Name:           derby
 Version:        10.9.1.0
 Release:        6.0%{?dist}
