@@ -1,7 +1,5 @@
-Index: java/tools/org/apache/derby/impl/tools/ij/ij.jj
-===================================================================
---- java/tools/org/apache/derby/impl/tools/ij/ij.jj	(revision 1081074)
-+++ java/tools/org/apache/derby/impl/tools/ij/ij.jj	(working copy)
+--- java/tools/org/apache/derby/impl/tools/ij/ij.jj.orig	2014-06-06 16:32:58.354027890 +0100
++++ java/tools/org/apache/derby/impl/tools/ij/ij.jj	2014-06-06 16:33:20.857663226 +0100
 @@ -28,6 +28,7 @@
  	UNICODE_INPUT = true;
  	IGNORE_CASE = true;
@@ -10,10 +8,8 @@ Index: java/tools/org/apache/derby/impl/tools/ij/ij.jj
  }
  
  PARSER_BEGIN(ij)
-Index: java/tools/org/apache/derby/impl/tools/ij/mtGrammar.jj
-===================================================================
---- java/tools/org/apache/derby/impl/tools/ij/mtGrammar.jj	(revision 1081074)
-+++ java/tools/org/apache/derby/impl/tools/ij/mtGrammar.jj	(working copy)
+--- java/tools/org/apache/derby/impl/tools/ij/mtGrammar.jj.orig	2014-06-06 16:33:35.980418162 +0100
++++ java/tools/org/apache/derby/impl/tools/ij/mtGrammar.jj	2014-06-06 16:33:58.603051561 +0100
 @@ -27,6 +27,7 @@
  	IGNORE_CASE = true;
  	CACHE_TOKENS = true;
@@ -22,10 +18,19 @@ Index: java/tools/org/apache/derby/impl/tools/ij/mtGrammar.jj
  }
  
  PARSER_BEGIN(mtGrammar)
-Index: java/engine/org/apache/derby/impl/sql/compile/TokenBase.java
-===================================================================
---- java/engine/org/apache/derby/impl/sql/compile/TokenBase.java	(revision 0)
-+++ java/engine/org/apache/derby/impl/sql/compile/TokenBase.java	(revision 0)
+--- java/engine/org/apache/derby/impl/sql/compile/sqlgrammar.jj.orig	2014-06-09 14:41:10.264418950 +0100
++++ java/engine/org/apache/derby/impl/sql/compile/sqlgrammar.jj	2014-06-09 14:52:52.127080724 +0100
+@@ -11,6 +11,8 @@
+ 	COMMON_TOKEN_ACTION = true;
+ 	CACHE_TOKENS = true;
+ 	UNICODE_INPUT = true;
++	JDK_VERSION = "1.4";
++	TOKEN_EXTENDS = "org.apache.derby.impl.sql.compile.TokenBase";
+ }
+ 
+ PARSER_BEGIN(SQLParser)
+--- java/engine/org/apache/derby/impl/sql/compile/TokenBase.java.orig	2014-06-09 14:54:14.096762143 +0100
++++ java/engine/org/apache/derby/impl/sql/compile/TokenBase.java	2014-06-09 14:54:58.672044878 +0100
 @@ -0,0 +1,35 @@
 +/*
 +
@@ -62,29 +67,8 @@ Index: java/engine/org/apache/derby/impl/sql/compile/TokenBase.java
 +     */
 +    int beginOffset, endOffset;
 +}
-
-Property changes on: java/engine/org/apache/derby/impl/sql/compile/TokenBase.java
-___________________________________________________________________
-Added: svn:eol-style
-   + native
-
-Index: java/engine/org/apache/derby/impl/sql/compile/sqlgrammar.jj
-===================================================================
---- java/engine/org/apache/derby/impl/sql/compile/sqlgrammar.jj	(revision 1081074)
-+++ java/engine/org/apache/derby/impl/sql/compile/sqlgrammar.jj	(working copy)
-@@ -11,6 +11,8 @@
- 	COMMON_TOKEN_ACTION = true;
- 	CACHE_TOKENS = true;
- 	UNICODE_INPUT = true;
-+	JDK_VERSION = "1.4";
-+	TOKEN_EXTENDS = "org.apache.derby.impl.sql.compile.TokenBase";
- }
- 
- PARSER_BEGIN(SQLParser)
-Index: java/engine/org/apache/derby/impl/sql/build.xml
-===================================================================
---- java/engine/org/apache/derby/impl/sql/build.xml	(revision 1081074)
-+++ java/engine/org/apache/derby/impl/sql/build.xml	(working copy)
+--- java/engine/org/apache/derby/impl/sql/build.xml.orig	2014-06-09 14:54:14.096762143 +0100
++++ java/engine/org/apache/derby/impl/sql/build.xml	2014-06-09 14:54:58.672044878 +0100
 @@ -57,11 +57,10 @@
        Token.java
        TokenMgrError.java
