@@ -16,6 +16,7 @@ Patch1: derby-javacc5.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=830661
 Patch2: derby-net.patch
 
+BuildRequires:	mvn(org.apache:apache:pom:)
 BuildRequires:  java-devel >= 1.6
 BuildRequires:  javapackages-local
 BuildRequires:  servlet3
