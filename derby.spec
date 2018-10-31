@@ -1,7 +1,7 @@
 %{?_javapackages_macros:%_javapackages_macros}
 Name:           derby
 Version:        10.10.2.0
-Release:        1.2
+Release:        1.3
 Summary:        Relational database implemented entirely in Java
 
 Group:          Databases
