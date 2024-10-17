@@ -6,7 +6,7 @@ Summary:        Relational database implemented entirely in Java
 
 Group:          Databases
 License:        ASL 2.0
-URL:            http://db.apache.org/derby/
+URL:            https://db.apache.org/derby/
 Source0:        http://apache.mirror.anlx.net//db/derby/db-derby-%{version}/db-derby-%{version}-src.tar.gz
 Source1:        derby-script
 Source2:        derby.service
